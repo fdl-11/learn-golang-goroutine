@@ -86,3 +86,34 @@ func TestInOutChannel(t *testing.T) {
 
 	time.Sleep(5 * time.Second)
 }
+
+func TestBufferedChannel(t *testing.T) {
+	channel := make(chan string, 3)
+	defer close(channel)
+
+	// Tanpa menggunakan goroutine
+	// channel <- "Fadli"
+	// channel <- "Darusalam"
+	// channel <- "Sragen"
+
+	// fmt.Println(<-channel)
+	// fmt.Println(<-channel)
+	// fmt.Println(<-channel)
+
+	// Dengan Goroutine
+	go func() {
+		channel <- "Fadli"
+		channel <- "Darusalam"
+		channel <- "Sragen"
+	}()
+	
+	go func() {
+		fmt.Println(<-channel)
+		fmt.Println(<-channel)
+		fmt.Println(<-channel)
+	}()
+
+	time.Sleep(2 * time.Second)
+
+	fmt.Println("Selesai!")
+}
