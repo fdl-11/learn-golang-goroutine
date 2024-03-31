@@ -1,4 +1,5 @@
 /*
+[Channel]
 Channel berfungsi untuk komunikasi antar goroutine
 Misal butuh menerima data dari proses goroutine
 */
