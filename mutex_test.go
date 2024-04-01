@@ -2,17 +2,21 @@ package golang_goroutine
 
 import (
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 )
-func TestRaceCondition(t *testing.T) {
+func TestMutex(t *testing.T) {
 	x := 0
+	var mutex sync.Mutex
 	
 	for i := 1; i <= 1000; i++ {
 		go func() {
 			for j := 1; j <= 100; j++ {
+				// Kalau ada variabel yg di sharing/diakses oleh beberapa goroutine
+				mutex.Lock()
 				x = x + 1
-				// ada dua/lebih goroutine mengakses data x bersamaan saat melakukan counter (karena parallel programming)
+				mutex.Unlock()
 			}
 		}()
 	}
