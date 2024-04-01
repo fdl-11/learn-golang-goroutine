@@ -61,3 +61,89 @@ func TestRWMutex(t *testing.T) {
 	time.Sleep(5 * time.Second)
 	fmt.Println("Total Balance =", account.GetBalance())
 }
+
+// ----------------------------------------------------------------
+
+type UserBalance struct {
+	sync.Mutex
+	Name string
+	Balance int
+}
+
+func (user *UserBalance) Lock() {
+	user.Mutex.Lock()
+}
+
+func (user *UserBalance) Unlock() {
+    user.Mutex.Unlock()
+}
+
+func (user *UserBalance) Change(amount int) {
+	user.Balance = user.Balance + amount
+}
+
+/* Kode mengalami deadlock
+func Transfer(user1 *UserBalance, user2 *UserBalance, amount int) {
+	user1.Lock()
+	fmt.Println("Lock user1", user1.Name)
+	user1.Change(-amount)
+
+	time.Sleep(1 * time.Second)
+	
+	user2.Lock()
+	fmt.Println("Lock user2", user2.Name)
+	user2.Change(amount)
+
+	time.Sleep(1 * time.Second)
+
+	user1.Unlock()
+	user2.Unlock()
+}
+*/
+
+// kode sudah tidak deadlock
+func Transfer(user1 *UserBalance, user2 *UserBalance, amount int) {
+	// Mengunci dalam urutan yang ditentukan
+	if user1.Name < user2.Name {
+		user1.Lock()
+		user2.Lock()
+	} else {
+		user2.Lock()
+		user1.Lock()
+	}
+
+	fmt.Println("Lock user1", user1.Name)
+	user1.Change(-amount)
+
+	time.Sleep(1 * time.Second)
+
+	fmt.Println("Lock user2", user2.Name)
+	user2.Change(amount)
+
+	time.Sleep(1 * time.Second)
+
+	user1.Unlock()
+	user2.Unlock()
+}
+
+func TestDeadLock(t *testing.T) {
+	user1 := UserBalance{
+		Name: "Fadli", 
+		Balance: 1000000,
+	}
+
+    user2 := UserBalance{
+		Name: "Darusalam", 
+		Balance: 1000000,
+	}
+
+    go Transfer(&user1, &user2, 100000)
+    go Transfer(&user2, &user1, 200000)
+
+    time.Sleep(10 * time.Second)
+
+	fmt.Println("User", user1.Name, "Balance :", user1.Balance)
+	fmt.Println("User", user2.Name, "Balance :", user2.Balance)
+
+	// Terjadi deadlock dimana baris 113 me-lock user 1, kemudian seharusnya berlanjut me-lock user 2, namun user 2 di-lock baris 114 lebih dahulu. Begitupula sebaliknya
+}
