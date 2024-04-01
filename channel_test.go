@@ -88,6 +88,8 @@ func TestInOutChannel(t *testing.T) {
 	time.Sleep(5 * time.Second)
 }
 
+// ----------------------------------------------------------------
+
 func TestBufferedChannel(t *testing.T) {
 	channel := make(chan string, 3)
 	defer close(channel)
@@ -119,6 +121,8 @@ func TestBufferedChannel(t *testing.T) {
 	fmt.Println("Selesai!")
 }
 
+// ----------------------------------------------------------------
+
 func TestRangeChannel(t *testing.T) {
 	channel := make(chan string)
 
@@ -135,6 +139,8 @@ func TestRangeChannel(t *testing.T) {
 
 	fmt.Println("Selesai")
 }
+
+// ----------------------------------------------------------------
 
 func TestSelectChannel(t *testing.T) {
 	channel1 := make(chan string)
@@ -161,6 +167,8 @@ func TestSelectChannel(t *testing.T) {
 		}
 	}
 }
+
+// ----------------------------------------------------------------
 
 func TestDefaultSelectChannel(t *testing.T) {
 	channel1 := make(chan string)
